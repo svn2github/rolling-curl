@@ -8,19 +8,19 @@ Maintained by Alexander Makarov, http://rmcreative.ru/
 $Id$
 */
 
-// a little example that fetches a bunch of sites in parallel and echos the page title and response info for each request
+require("RollingCurl.php");
 
-function request_callback($response, $info) {
+// a little example that fetches a bunch of sites in parallel and echos the page title and response info for each request
+function request_callback($response, $info, $request) {
 	// parse the page title out of the returned HTML
 	if (preg_match("~<title>(.*?)</title>~i", $response, $out)) {
 		$title = $out[1];
 	}
 	echo "<b>$title</b><br />";
 	print_r($info);
+    print_r($request);
 	echo "<hr>";
 }
-
-require("RollingCurl.php");
 
 // single curl request
 $rc = new RollingCurl("request_callback");
@@ -59,7 +59,7 @@ $urls = array("http://www.google.com",
 $rc = new RollingCurl("request_callback");
 $rc->window_size = 20;
 foreach ($urls as $url) {
-    $request = new Request($url);
+    $request = new RollingCurlRequest($url);
     $rc->add($request);
 }
 $rc->execute();
